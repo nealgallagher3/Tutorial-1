@@ -8,15 +8,19 @@ public class PlayerController : MonoBehaviour
     public float speed;
     public Text countText;
     public Text winText;
+    public Text livesText;
     private Rigidbody2D rb2d;
     private int count;
+    private int lives;
 
     private void Start()
     {
         rb2d = GetComponent<Rigidbody2D>();
         count = 0;
+        lives = 3;
         winText.text = "";
         SetCountText();
+        SetLivesText();
     }
 
     private void FixedUpdate()
@@ -29,7 +33,7 @@ public class PlayerController : MonoBehaviour
             Application.Quit();
     }
     
-    private void OnTriggerEnter2D(Collider2D other)
+     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.gameObject.CompareTag("PickUp"))
         {
@@ -37,11 +41,31 @@ public class PlayerController : MonoBehaviour
             count = count + 1;
             SetCountText();
         }
+        else if (other.gameObject.CompareTag("Enemy"))
+        {
+            other.gameObject.SetActive(false);
+            lives = lives - 1;
+            SetLivesText();
+        }
+    }
+    void SetLivesText()
+    {
+        livesText.text = "Lives: " + lives.ToString();
+        if (lives == 0)
+        {
+            Destroy(this);
+            winText.text = "You Lose!";
+        }
+
     }
     void SetCountText()
     {
         countText.text = "Count: " + count.ToString();
-        if (count >= 12)
+        if (count == 12) 
+        {
+            transform.position = new Vector2(50.0f, 50.0f); 
+        }
+        if (count >= 20)
         {
             winText.text = "You win! Game created by Neal Gallagher!";
         }
